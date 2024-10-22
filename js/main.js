@@ -184,7 +184,7 @@ function animate(time) {
 
 	} else {
 
-		if (lastLoadedFrames !== loadedFrames) {
+		if (lastLoadedFrames !== loadedFrames && loadFont !== null) {
 			let frameText = new TextGeometry(loadedFrames + "/" + frameCount, { font: loadFont, size: 1, depth: 0 });
 			frameText.computeBoundingBox();
 			let frameCenterOffset = - 0.5 * (frameText.boundingBox.max.x - frameText.boundingBox.min.x);
