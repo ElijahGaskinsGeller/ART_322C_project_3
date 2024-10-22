@@ -153,6 +153,17 @@ window.addEventListener("mouseup", function() {
 
 });
 
+window.addEventListener("touchstart", function() {
+	controls.lock();
+});
+
+window.addEventListener("touchend", function() {
+	controls.unlock();
+
+});
+
+
+
 function OnWindowResize(e) {
 
 	camera.aspect = window.innerWidth / window.innerHeight;
