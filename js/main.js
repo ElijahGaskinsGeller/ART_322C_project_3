@@ -37,7 +37,7 @@ let loadedFramesText = null;
 let fontLoader = new FontLoader();
 
 
-fontLoader.load("/node_modules/three/examples/fonts/optimer_regular.typeface.json", function(font) {
+fontLoader.load("rec/optimer_bold.typeface.json", function(font) {
 	//fontLoader.load(fontUrl, function(font) {
 
 	loadFont = font;
