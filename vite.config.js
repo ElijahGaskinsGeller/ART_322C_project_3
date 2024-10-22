@@ -1,6 +1,13 @@
+import { defineConfig } from "vite"
 
-export default {
+//export default {
+//
+//	base: "./",
+//
+//}
 
-	base: "./"
+export default defineConfig({
 
-}
+	base: "./",
+
+})
