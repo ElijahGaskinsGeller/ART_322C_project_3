@@ -20,7 +20,7 @@ let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-let frameCount = 100;
+let frameCount = 120;
 let loadedFrames = 0;
 let lastLoadedFrames = 0;
 
@@ -117,12 +117,12 @@ for (let i = 0; i < frameCount; i++) {
 	let currentEnvironment = new THREE.CubeTextureLoader()
 		.setPath("./imgs/")
 		.load([
-			currentFrame + '.left.jpg',
-			currentFrame + '.right.jpg',
-			currentFrame + '.top.jpg',
-			currentFrame + '.bottom.jpg',
-			currentFrame + '.back.jpg',
-			currentFrame + '.front.jpg',
+			currentFrame + '_left.jpg',
+			currentFrame + '_right.jpg',
+			currentFrame + '_top.jpg',
+			currentFrame + '_bottom.jpg',
+			currentFrame + '_back.jpg',
+			currentFrame + '_front.jpg',
 
 		], function(texture) {
 
@@ -175,15 +175,31 @@ function OnWindowResize(e) {
 }
 
 
+let frameTime = 1000 / 24;
+let currentFrameTime = 0;
+let currentFrame = 0;
+
+let lastFrameTime = 0;
+
 function animate(time) {
+
+	let deltaTime = time - lastFrameTime;
+	lastFrameTime = time;
 
 	if (loadedFrames == frameCount) {
 
-		let currentSec = Math.round(time / 10);
-		let currentFrame = (currentSec) % (environmentFrames.length - 1);
+		currentFrameTime += deltaTime;
+		if (currentFrameTime >= frameTime) {
+			currentFrame++;
+			currentFrameTime = 0;
+			if (currentFrame >= frameCount) {
+				currentFrame = 0;
+			}
+		}
 
-		//console.log("currentFrame:" + currentFrame);
-		//console.log("currentSec:" + currentSec);
+		//let currentSec = Math.round(time / 10);
+		//let currentFrame = (currentSec) % (environmentFrames.length - 1);
+
 		scene.background = environmentFrames[currentFrame];
 
 		cube.rotation.x += 0.01;
