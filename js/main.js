@@ -20,7 +20,7 @@ let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-let frameCount = 120;
+let frameCount = 30;
 let loadedFrames = 0;
 let lastLoadedFrames = 0;
 
@@ -80,7 +80,7 @@ let geometry = new THREE.BoxGeometry(1, 1, 1);
 let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 let cube = new THREE.Mesh(geometry, material);
 cube.position.z = -10;
-scene.add(cube);
+//scene.add(cube);
 
 let controls = new PointerLockControls(camera, renderer.domElement);
 controls.minPolarAngle = Math.PI / 10;
@@ -117,12 +117,12 @@ for (let i = 0; i < frameCount; i++) {
 	let currentEnvironment = new THREE.CubeTextureLoader()
 		.setPath("./imgs/")
 		.load([
-			currentFrame + '_left.jpg',
-			currentFrame + '_right.jpg',
-			currentFrame + '_top.jpg',
-			currentFrame + '_bottom.jpg',
-			currentFrame + '_back.jpg',
-			currentFrame + '_front.jpg',
+			currentFrame + '.left.jpg',
+			currentFrame + '.right.jpg',
+			currentFrame + '.top.jpg',
+			currentFrame + '.bottom.jpg',
+			currentFrame + '.back.jpg',
+			currentFrame + '.front.jpg',
 
 		], function(texture) {
 
@@ -175,7 +175,7 @@ function OnWindowResize(e) {
 }
 
 
-let frameTime = 1000 / 24;
+let frameTime = 1000 / 3;
 let currentFrameTime = 0;
 let currentFrame = 0;
 
