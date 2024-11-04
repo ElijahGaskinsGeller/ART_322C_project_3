@@ -175,7 +175,7 @@ function OnWindowResize(e) {
 }
 
 
-let frameTime = 1000 / 3;
+let frameTime = 1000 / 6;
 let currentFrameTime = 0;
 let currentFrame = 0;
 
