@@ -19,6 +19,7 @@ camera.position.z = 0;
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+renderer.domElement.id = "canvas";
 
 let frameCount = 30;
 let loadedFrames = 0;
@@ -28,6 +29,22 @@ let lastLoadedFrames = 0;
 
 //NOTE: LOADER
 
+
+let audioListener = new THREE.AudioListener();
+camera.add(audioListener);
+
+let music = new THREE.Audio(audioListener);
+
+let audioLoader = new THREE.AudioLoader();
+audioLoader.load("./music/sittin_on_the_dock_of_the_bay.opus", function(buffer) {
+
+	music.setBuffer(buffer);
+	music.setLoop(true);
+	music.setVolume(.5);
+
+});
+
+
 let loadScene = new THREE.Scene();
 let textMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
 let loadFont = null;
@@ -36,9 +53,9 @@ let loadedFramesText = null;
 
 let fontLoader = new FontLoader();
 
+let loadTextMesh = null;
 
 fontLoader.load("rec/optimer_bold.typeface.json", function(font) {
-	//fontLoader.load(fontUrl, function(font) {
 
 	loadFont = font;
 
@@ -49,7 +66,7 @@ fontLoader.load("rec/optimer_bold.typeface.json", function(font) {
 	let centerOffset = - 0.5 * (loadTextGeometry.boundingBox.max.x - loadTextGeometry.boundingBox.min.x);
 
 
-	let loadTextMesh = new THREE.Mesh(loadTextGeometry, textMaterial);
+	loadTextMesh = new THREE.Mesh(loadTextGeometry, textMaterial);
 
 
 	loadTextMesh.position.x = centerOffset;
@@ -80,26 +97,13 @@ let geometry = new THREE.BoxGeometry(1, 1, 1);
 let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 let cube = new THREE.Mesh(geometry, material);
 cube.position.z = -10;
-//scene.add(cube);
+
 
 let controls = new PointerLockControls(camera, renderer.domElement);
 controls.minPolarAngle = Math.PI / 10;
 controls.maxPolarAngle = Math.PI;
 
 
-
-//let TEST_environment = new THREE.CubeTextureLoader()
-//	.setPath("./imgs/")
-//	.load([
-//		'_.left.png',
-//		'_.right.png',
-//		'_.top.png',
-//		'_.bottom.png',
-//		'_.back.png',
-//		'_.front.png',
-//
-//	]);
-//
 
 let environmentFrames = [];
 for (let i = 0; i < frameCount; i++) {
@@ -144,13 +148,27 @@ scene.background = environmentFrames[0];
 
 
 
-window.addEventListener("mousedown", function() {
-	controls.lock();
+let canvas = document.getElementById("canvas");
+window.addEventListener("mousedown", function(e) {
+	console.log(e);
+	if (loadedFrames === frameCount) {
+
+		if (!playing) {
+			camera.rotation.y = Math.PI;
+			playing = true;
+			music.play();
+			soundIcon.classList.add("display");
+		}
+
+
+		if (e.target === canvas) {
+			controls.lock();
+		}
+	}
 });
 
 window.addEventListener("mouseup", function() {
 	controls.unlock();
-
 });
 
 window.addEventListener("touchstart", function() {
@@ -180,13 +198,14 @@ let currentFrameTime = 0;
 let currentFrame = 0;
 
 let lastFrameTime = 0;
+let playing = false;
 
 function animate(time) {
 
 	let deltaTime = time - lastFrameTime;
 	lastFrameTime = time;
 
-	if (loadedFrames == frameCount) {
+	if (playing) {
 
 		currentFrameTime += deltaTime;
 		if (currentFrameTime >= frameTime) {
@@ -197,8 +216,6 @@ function animate(time) {
 			}
 		}
 
-		//let currentSec = Math.round(time / 10);
-		//let currentFrame = (currentSec) % (environmentFrames.length - 1);
 
 		scene.background = environmentFrames[currentFrame];
 
@@ -212,7 +229,17 @@ function animate(time) {
 	} else {
 
 		if (lastLoadedFrames !== loadedFrames && loadFont !== null) {
-			let frameText = new TextGeometry(loadedFrames + "/" + frameCount, { font: loadFont, size: 1, depth: 0 });
+
+			let frameText = null;
+
+			if (loadedFrames === frameCount) {
+				loadScene.remove(loadTextMesh);
+				frameText = new TextGeometry("Click To Play", { font: loadFont, size: 1, depth: 0 });
+			} else {
+				frameText = new TextGeometry(loadedFrames + "/" + frameCount, { font: loadFont, size: 1, depth: 0 });
+			}
+
+
 			frameText.computeBoundingBox();
 			let frameCenterOffset = - 0.5 * (frameText.boundingBox.max.x - frameText.boundingBox.min.x);
 			//loadedFramesText = new THREE.Mesh(frameText, textMaterial);
@@ -224,6 +251,8 @@ function animate(time) {
 			loadedFramesText.rotation.y = Math.PI * 2;
 
 		}
+
+
 
 		renderer.render(loadScene, camera);
 
@@ -239,3 +268,26 @@ window.addEventListener("resize", OnWindowResize);
 //renderer.setAnimationLoop(animate);
 
 animate();
+
+let soundIcon = document.getElementById("icon-sound");
+let muteIcon = document.getElementById("icon-mute");
+
+
+soundIcon.addEventListener("click", function(e) {
+
+	soundIcon.classList.remove("display");
+	muteIcon.classList.add("display");
+
+	music.setVolume(0);
+
+});
+
+muteIcon.addEventListener("click", function(e) {
+
+	muteIcon.classList.remove("display");
+	soundIcon.classList.add("display");
+	music.setVolume(.5);
+
+});
+
+
